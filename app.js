@@ -7,10 +7,9 @@ const ROUTES = [
  {name:"San Enrique Plaza", color:"#16a34a", pts:[[11.1086,122.6411],[11.07145,122.65567]]},
  {name:"San Enrique – Compo", color:"#f59e0b", pts:[[11.07145,122.65567],[11.0571,122.6557]]},
  {name:"Punong-Man-it Bypass", color:"#7c3aed", pts:[
-   [11.1150,122.6330], // Punong junction (Welcome arc) - PALITAN
-   [11.1050,122.6480], // gitna - PALITAN
-   [11.0950,122.6600]  // Man-it bridge - PALITAN
- ]}
+  [11.081361,122.626791]
+  // ...susunod na mga punto dito
+]}
 ];
 const PLANS = [
  {id:"Basic",price:"Free",perks:["Join community rides","Live route map","Group chat"]},
