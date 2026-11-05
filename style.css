@@ -128,3 +128,15 @@ header.top b,body.dark .top b{color:#fff}
 footer{background:linear-gradient(90deg,#0a2f5c,#0d4fb8);color:#d6e8fb;border:0}footer b,body.dark footer b{color:#fff}
 @media(max-width:860px){.split{grid-template-columns:1fr}.hero{min-height:260px;padding:28px}.hl{display:none}}
 @media(max-width:800px){.nav{margin:0;border-radius:0;align-self:auto}}
+
+/* ===== ROUTE PHOTO BACKGROUNDS ===== */
+.rcd{position:relative;min-height:210px;display:flex;flex-direction:column;justify-content:flex-end;isolation:isolate}
+.rcd .im{position:absolute;inset:0;height:100%;z-index:-2;background-size:cover;background-position:center}
+.rcd::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,47,92,0) 35%,rgba(10,47,92,.85) 100%)}
+.rcd .tx{background:transparent;padding:16px;color:#fff}
+.rcd .tx b{color:#fff!important;font-size:1.1rem;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.rcd .tx span{color:#e3efff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.rcd .tx::before{content:"";display:block;width:34px;height:4px;border-radius:4px;background:var(--rc,#fff);margin-bottom:8px}
+/* hero & banner photos */
+.hero{background:linear-gradient(180deg,rgba(10,47,92,.2),rgba(10,47,92,.88)),url(images/hero.jpg) center/cover,#0a2f5c}
+.banner{background:linear-gradient(100deg,rgba(10,47,92,.9),rgba(23,105,224,.4)),url(images/banner.jpg) center/cover,#1769e0}

@@ -4,8 +4,8 @@ const EMAILJS = { publicKey:"", serviceId:"", templateId:"" }; // https://www.em
 const ADMIN = { email:"admin@passicycling.com", pass:"admin123", name:"Admin" }; // change after first login
 const ROUTES = [
  {name:"Agcararao Mountain View", color:"#e11d48", pts:[[11.1086,122.6411],[11.15286,122.67738]]},
- {name:"San Enrique Plaza", color:"#16a34a", pts:[[11.1086,122.6411],[11.07145,122.65567]]},
  {name:"San Enrique – Compo", color:"#f59e0b", pts:[[11.07145,122.65567],[11.0571,122.6557]]},
+ {name:"San Enrique Plaza", color:"#16a34a", pts:[[11.1086,122.6411],[11.07145,122.65567]]},
  {name:"Punong-Man-it Bypass", color:"#7c3aed", pts:[
   [11.081361,122.626791]
   // ...susunod na mga punto dito
@@ -165,6 +165,6 @@ function renderAdmin(){const us=load('pcc_users',[]);$('#aStats').innerHTML=`<di
 
 /* ---------- home ---------- */
 function renderHome(){$('#hw').textContent='Welcome, '+me.name.split(' ')[0]+'!';
- $('#rcards').innerHTML=ROUTES.map((r,i)=>`<div class="rcd" data-i="${i}" style="animation-delay:${i*.08}s"><div class="im" style="background-image:url(images/route-${i+1}.jpg),url(images/route-${i+1}.svg)"></div><div class="tx"><b style="color:${r.color}">${r.name}</b><span>${r.km?r.km+' km · about '+Math.round(r.km/15*60)+' min by bike':'Tap to view on the live map'}</span></div></div>`).join('');
+ $('#rcards').innerHTML=ROUTES.map((r,i)=>`<div class="rcd" data-i="${i}" style="animation-delay:${i*.08}s;--rc:${r.color}"><div class="im" style="background-image:url(images/route-${i+1}.jpg),url(images/route-${i+1}.svg)"></div><div class="tx"><b style="color:${r.color}">${r.name}</b><span>${r.km?r.km+' km · about '+Math.round(r.km/15*60)+' min by bike':'Tap to view on the live map'}</span></div></div>`).join('');
  $$('#rcards .rcd').forEach(c=>c.onclick=()=>{show('map');setTimeout(()=>$(`#chips .chip[data-i="${c.dataset.i}"]`)?.click(),350)});
  $$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go))}
