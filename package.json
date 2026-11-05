@@ -1,0 +1,11 @@
+{
+  "name": "passi-city-community-cycling",
+  "version": "1.0.0",
+  "description": "Passi City Community Cycling website",
+  "scripts": {
+    "start": "serve . -l $PORT"
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  }
+}
