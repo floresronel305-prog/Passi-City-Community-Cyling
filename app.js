@@ -39,18 +39,25 @@ setTimeout(()=>{$('#splash').classList.add('out');boot()},1800);
 
 /* ---------- location gate ---------- */
 function getPos(){return new Promise((ok,no)=>{if(!navigator.geolocation)return no({message:'Geolocation is not supported by this browser.'});navigator.geolocation.getCurrentPosition(p=>{pos=p;ok(p)},no,{enableHighAccuracy:true,timeout:15000})})}
-async function askLoc(){try{await getPos();$('#dot').classList.add('on');$('#locTxt').textContent='Location is on. You can continue.';$('#forms').classList.remove('hidden');$('#locBtn').classList.add('hidden');return true}catch(e){$('#dot').classList.remove('on');$('#forms').classList.add('hidden');$('#locBtn').classList.remove('hidden');$('#locTxt').textContent='Location is off. Allow location in your browser settings, then tap the button again.';return false}}
-$('#locBtn').onclick=askLoc;
-function boot(){const sid=sessionStorage.getItem('pcc_me');if(sid){const u=users.find(x=>x.id===sid);if(u){me=u;return enter()}}$('#auth').classList.remove('hidden');askLoc()}
+/* Location is now requested only when the user opens the Map tab (not at login/sign up). */
+let locAsked=false;
+async function askMapLoc(force){if(pos||(locAsked&&!force))return;locAsked=true;
+ try{await getPos();if(me){me.loc={lat:pos.coords.latitude,lng:pos.coords.longitude,t:Date.now()};persist()}
+  map.setView([pos.coords.latitude,pos.coords.longitude],15);toast('Location is on.')}
+ catch(e){toast('Location is off. Allow location in your browser settings to see yourself on the map.')}}
+function boot(){const sid=sessionStorage.getItem('pcc_me');if(sid){const u=users.find(x=>x.id===sid);if(u){me=u;return enter()}}
+ /* show the login/sign up forms right away; hide the old location gate */
+ $('#forms')?.classList.remove('hidden');['#locBtn','#dot','#locTxt'].forEach(s=>$(s)?.classList.add('hidden'));
+ $('#auth').classList.remove('hidden')}
 $$('.tabs button').forEach(b=>b.onclick=()=>{$$('.tabs button').forEach(x=>x.classList.toggle('on',x===b));$('#fLogin').classList.toggle('hidden',b.dataset.t!=='login');$('#fSign').classList.toggle('hidden',b.dataset.t!=='signup');$('#fForgot').classList.add('hidden');$('#amsg').textContent=''});
 const amsg=(t,ok)=>{$('#amsg').textContent=t;$('#amsg').className='msg'+(ok?' ok':'')};
 $('#toForgot').onclick=()=>{$('#fLogin').classList.add('hidden');$('#fForgot').classList.remove('hidden')};
 $('#backLogin').onclick=()=>{$('#fForgot').classList.add('hidden');$('#fLogin').classList.remove('hidden')};
-$('#fSign').onsubmit=async e=>{e.preventDefault();if(!await askLoc())return amsg('Turn on location first.');
+$('#fSign').onsubmit=async e=>{e.preventDefault();
  const email=$('#sEmail').value.trim().toLowerCase();if(users.find(u=>u.email===email))return amsg('This email is already registered.');
  const u={id:'u'+Date.now(),name:$('#sName').value.trim(),email,pass:await sha($('#sPass').value),role:'user',member:'none',plan:'Basic',phone:'',addr:'',bio:'',avatar:'',share:true};
  users.push(u);save('pcc_users',users);me=u;login()};
-$('#fLogin').onsubmit=async e=>{e.preventDefault();if(!await askLoc())return amsg('Turn on location first.');
+$('#fLogin').onsubmit=async e=>{e.preventDefault();
  const u=users.find(x=>x.email===$('#lEmail').value.trim().toLowerCase());
  if(!u||u.pass!==await sha($('#lPass').value))return amsg('Wrong email or password.');me=u;login()};
 function login(){sessionStorage.setItem('pcc_me',me.id);enter()}
@@ -84,7 +91,7 @@ function enter(){$('#auth').classList.add('hidden');$('#app').classList.remove('
  initMap();show('home')}
 function persist(){const i=users.findIndex(u=>u.id===me.id);users[i]=me;save('pcc_users',users)}
 function show(v){$$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
- if(v==='map')setTimeout(()=>map.invalidateSize(),50);({home:renderHome,bike:renderBikes,member:renderMember,chat:renderChat,photos:renderPhotos,profile:fillProfile,settings:fillSettings,admin:renderAdmin})[v]?.()}
+ if(v==='map'){setTimeout(()=>map.invalidateSize(),50);askMapLoc()}({home:renderHome,bike:renderBikes,member:renderMember,chat:renderChat,photos:renderPhotos,profile:fillProfile,settings:fillSettings,admin:renderAdmin})[v]?.()}
 
 /* ---------- map + routes + live GPS ---------- */
 let map,meMarker,acc,trail,watch=null,trailPts=[],dist=0,others=L.layerGroup(),ctrls=[],routeLayers={};
