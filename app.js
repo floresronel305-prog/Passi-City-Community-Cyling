@@ -3,9 +3,9 @@ const LOGO_URL = "logo.png"; // put the official Passi City logo file next to in
 const EMAILJS = { publicKey:"", serviceId:"", templateId:"" }; // https://www.emailjs.com (template vars: {{to_email}}, {{code}}, {{name}})
 const ADMIN = { email:"admin@passicycling.com", pass:"admin123", name:"Admin" }; // change after first login
 const ROUTES = [
- {name:"Agcararao Mountain View", color:"#e11d48", pts:[[11.1086,122.6411],[11.1348,122.6793]]},
- {name:"San Enrique Plaza", color:"#16a34a", pts:[[11.1086,122.6411],[11.0697,122.6567]]},
- {name:"San Enrique – Compo", color:"#f59e0b", pts:[[11.0697,122.6567],[11.0571,122.6557]]},
+ {name:"Agcararao Mountain View", color:"#e11d48", pts:[[11.1086,122.6411],[11.15286,122.67738]]},
+ {name:"San Enrique Plaza", color:"#16a34a", pts:[[11.1086,122.6411],[11.07145,122.65567]]},
+ {name:"San Enrique – Compo", color:"#f59e0b", pts:[[11.07145,122.65567],[11.0571,122.6557]]},
  {name:"Man-it Bypass", color:"#7c3aed", pts:[[11.1150,122.6330],[11.1050,122.6480],[11.0950,122.6600]]}
 ];
 const PLANS = [
