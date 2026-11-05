@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PASSI CITY COMMUNITY CYCLING</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="splash"><div class="sp"><div class="lg"></div><h2>PASSI CITY COMMUNITY CYCLING</h2><div class="road"><i>🚴</i></div></div></div>
+
+<!-- STEP 1: LOCATION GATE + AUTH -->
+<section id="auth" class="center hidden">
+ <div class="box card">
+  <div class="brand"><div class="lg"></div><h1>PASSI CITY COMMUNITY CYCLING</h1><p>Ride together. Ride safe.</p></div>
+  <div class="locstat"><span class="dot" id="dot"></span><span id="locTxt">Turn on your location to sign up or log in.</span></div>
+  <button class="btn" style="width:100%" id="locBtn">Turn on location</button>
+  <div id="forms" class="hidden" style="margin-top:16px">
+   <div class="tabs"><button class="on" data-t="login">Log in</button><button data-t="signup">Sign up</button></div>
+   <div class="msg" id="amsg"></div>
+   <form id="fLogin"><label>Email</label><input type="email" id="lEmail" required><label>Password</label><input type="password" id="lPass" required>
+    <button class="btn" style="width:100%">Log in</button><p style="text-align:center;margin-top:10px"><button type="button" class="link" id="toForgot">Forgot password?</button></p></form>
+   <form id="fSign" class="hidden"><label>Full name</label><input id="sName" required><label>Email (Gmail)</label><input type="email" id="sEmail" required><label>Password (6+ characters)</label><input type="password" id="sPass" minlength="6" required><button class="btn" style="width:100%">Create account</button></form>
+   <form id="fForgot" class="hidden"><label>Account email</label><input type="email" id="fEmail" required><button class="btn" style="width:100%" id="sendCode">Send code to my email</button>
+    <div id="codeBox" class="hidden" style="margin-top:12px"><label>6-digit code</label><input id="fCode" inputmode="numeric" maxlength="6"><label>New password</label><input type="password" id="fNew" minlength="6"><button type="button" class="btn" style="width:100%" id="resetBtn">Reset password</button></div>
+    <p style="text-align:center;margin-top:10px"><button type="button" class="link" id="backLogin">Back to log in</button></p></form>
+  </div>
+ </div>
+</section>
+
+<!-- APP -->
+<div id="app" class="hidden" style="display:flex;flex-direction:column;flex:1">
+ <header class="top"><div class="lg sm"></div><b>PASSI CITY<br>COMMUNITY CYCLING</b><span class="sp1"></span><span id="hName" style="font-weight:600"></span><div class="av" id="hAv"></div></header>
+ <div class="layout">
+  <nav class="nav" id="nav"></nav>
+  <main>
+   <!-- MAP -->
+   <div class="view on" id="v-map">
+    <h2>Live route map</h2>
+    <div class="chips" id="chips"></div>
+    <div class="stats"><div><b id="sDist">0.00</b><span>km ridden</span></div><div><b id="sSpd">0</b><span>km/h</span></div><div><b id="sRoute">–</b><span>route length</span></div></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn" id="rideBtn">Start live GPS</button><button class="btn sm" id="centerBtn" style="background:#fff;color:var(--blue)">Center on me</button></div>
+    <div id="map"></div>
+   </div>
+   <!-- BIKE -->
+   <div class="view" id="v-bike"><h2>My bike</h2>
+    <div class="grid" style="margin-top:12px"><form class="card" id="bikeForm"><h3>Register bike</h3><br>
+     <label>Bike name / nickname</label><input id="bName" required><label>Type</label><select id="bType"><option>Mountain</option><option>Road</option><option>Hybrid</option><option>Folding</option><option>BMX</option><option>E-bike</option></select>
+     <label>Brand</label><input id="bBrand"><label>Color</label><input id="bColor"><label>Frame / serial no.</label><input id="bSerial"><label>Photo</label><input type="file" id="bPhoto" accept="image/*"><button class="btn" style="width:100%">Save bike</button></form>
+     <div class="card"><h3>Registered bikes</h3><div id="bikeList" style="margin-top:12px"></div></div></div></div>
+   <!-- MEMBER -->
+   <div class="view" id="v-member"><h2>Membership</h2><p style="color:var(--mute)">Status: <span class="badge" id="mStat"></span></p>
+    <div class="grid" style="margin-top:14px" id="plans"></div></div>
+   <!-- CHAT -->
+   <div class="view" id="v-chat"><h2>Messages</h2><div class="card chat" style="margin-top:12px"><div class="cl" id="cl"></div><div class="cw"><div class="ch" id="cH">Community</div><div class="cm" id="cM"></div><form class="cf" id="cF"><input id="cI" placeholder="Type a message…" autocomplete="off"><button class="btn">Send</button></form></div></div></div>
+   <!-- PHOTOS -->
+   <div class="view" id="v-photos"><h2>Photos</h2><div class="card" style="margin:12px 0"><label>Upload ride photos</label><input type="file" id="pUp" accept="image/*" multiple><input id="pCap" placeholder="Caption (optional)"><button class="btn" id="pBtn">Upload</button></div><div class="gal" id="gal"></div></div>
+   <!-- PROFILE -->
+   <div class="view" id="v-profile"><h2>My profile</h2><form class="card" id="pf" style="margin-top:12px;max-width:520px">
+    <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px"><div class="av" id="pAv" style="width:72px;height:72px;font-size:1.6rem"></div><input type="file" id="pPic" accept="image/*"></div>
+    <label>Full name</label><input id="pfName"><label>Email</label><input id="pfEmail" disabled><label>Phone</label><input id="pfPhone"><label>Address</label><input id="pfAddr"><label>About me</label><textarea id="pfBio" rows="3"></textarea><button class="btn">Save profile</button></form></div>
+   <!-- SETTINGS -->
+   <div class="view" id="v-settings"><h2>Settings</h2><div class="card" style="margin-top:12px;max-width:520px">
+    <div class="sw"><span>Dark mode</span><button class="tg" id="tDark"></button></div>
+    <div class="sw"><span>Share my live location with members</span><button class="tg" id="tShare"></button></div>
+    <div class="sw"><span>Chat sound</span><button class="tg" id="tSound"></button></div>
+    <h3 style="margin:18px 0 8px">Change password</h3><input type="password" id="cpOld" placeholder="Current password"><input type="password" id="cpNew" placeholder="New password (6+)"><button class="btn sm" id="cpBtn">Update password</button>
+    <div style="margin-top:20px;display:flex;gap:10px"><button class="btn sm red" id="logout">Log out</button></div></div></div>
+   <!-- ADMIN -->
+   <div class="view" id="v-admin"><h2>Admin panel</h2><div class="stats" id="aStats"></div>
+    <div class="card tbl" style="margin-top:6px"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Membership</th><th>Last location</th><th></th></tr></thead><tbody id="aBody"></tbody></table></div></div>
+  </main>
+ </div>
+</div>
+
+<footer><span class="fb">🚴</span>© 2026 Passi City Community Cycling<br>Developed by <b>RONEL SIGAYA FLORES</b><br>BSIT Student, PHINMA University of Iloilo</footer>
+<div id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js"></script>
+<script src="app.js"></script>
+<script src="enhancement.js"></script>
+</body>
+</html>
