@@ -5,7 +5,7 @@ const ADMIN = { email:"admin@passicycling.com", pass:"admin123", name:"Admin" };
 const ROUTES = [ // waypoints are approximate; OSRM snaps the line to real roads. Adjust lat/lng if needed.
  {name:"Agcararao", color:"#e11d48", pts:[[11.1086,122.6411],[11.1000,122.6250],[11.0890,122.6120]]},
  {name:"San Enrique", color:"#16a34a", pts:[[11.1086,122.6411],[11.0500,122.6600],[11.0000,122.6770]]},
- {name:"Compo", color:"#f59e0b", pts:[[11.1086,122.6411],[11.1200,122.6600],[11.1330,122.6800]]},
+ {name:"Compi", color:"#f59e0b", pts:[[11.1086,122.6411],[11.1200,122.6600],[11.1330,122.6800]]},
  {name:"Man-it Bypass", color:"#7c3aed", pts:[[11.1150,122.6330],[11.1050,122.6480],[11.0950,122.6600]]}
 ];
 const PLANS = [
@@ -51,30 +51,37 @@ $('#fLogin').onsubmit=async e=>{e.preventDefault();if(!await askLoc())return ams
  const u=users.find(x=>x.email===$('#lEmail').value.trim().toLowerCase());
  if(!u||u.pass!==await sha($('#lPass').value))return amsg('Wrong email or password.');me=u;login()};
 function login(){sessionStorage.setItem('pcc_me',me.id);enter()}
-/* forgot password: code to Gmail via EmailJS */
-$('#fForgot').onsubmit=async e=>{e.preventDefault();const email=$('#fEmail').value.trim().toLowerCase(),u=users.find(x=>x.email===email);
- if(!u)return amsg('No account with that email.');
- const code=String(Math.floor(100000+Math.random()*900000));save('pcc_reset',{email,code,exp:Date.now()+10*60000});
- $('#sendCode').disabled=true;
- try{if(!EMAILJS.publicKey)throw 0;emailjs.init({publicKey:EMAILJS.publicKey});await emailjs.send(EMAILJS.serviceId,EMAILJS.templateId,{to_email:email,code,name:u.name});amsg('Code sent. Check your Gmail inbox (and spam).',1)}
- catch{amsg('EmailJS is not set up yet, so demo code is: '+code,1)}
- $('#sendCode').disabled=false;$('#codeBox').classList.remove('hidden')};
-$('#resetBtn').onclick=async()=>{const r=load('pcc_reset',null);if(!r||r.email!==$('#fEmail').value.trim().toLowerCase()||r.code!==$('#fCode').value.trim()||Date.now()>r.exp)return amsg('Invalid or expired code.');
- if($('#fNew').value.length<6)return amsg('Password must be 6+ characters.');
- const u=users.find(x=>x.email===r.email);u.pass=await sha($('#fNew').value);save('pcc_users',users);localStorage.removeItem('pcc_reset');amsg('Password updated. You can log in now.',1);setTimeout(()=>$('#backLogin').click(),1200)};
+/* forgot password: 6-digit code sent to the user's Gmail via EmailJS */
+function startCool(){let c=60;const b=$('#sendCode');b.disabled=true;const t=setInterval(()=>{c--;b.textContent=c>0?`Resend code in ${c}s`:'Send code to my email';if(c<=0){b.disabled=false;clearInterval(t)}},1000)}
+$('#fForgot').onsubmit=async e=>{e.preventDefault();
+ const email=$('#fEmail').value.trim().toLowerCase(),u=users.find(x=>x.email===email),b=$('#sendCode');
+ if(!u)return amsg('No account found with that email.');
+ const code=String(Math.floor(100000+Math.random()*900000));
+ save('pcc_reset',{email,code:await sha(code+email),exp:Date.now()+10*60000,tries:0});
+ b.disabled=true;b.textContent='Sending…';
+ if(!EMAILJS.publicKey){b.disabled=false;b.textContent='Send code to my email';$('#codeBox').classList.remove('hidden');return amsg('Email service is not set up yet (see EMAILJS_SETUP.md). Test code: '+code,1)}
+ try{emailjs.init({publicKey:EMAILJS.publicKey});await emailjs.send(EMAILJS.serviceId,EMAILJS.templateId,{to_email:email,code,name:u.name});
+  amsg('A 6-digit code was sent to '+email+'. It expires in 10 minutes.',1);$('#codeBox').classList.remove('hidden');startCool()}
+ catch(err){b.disabled=false;b.textContent='Send code to my email';amsg('Could not send the email. Check your EmailJS keys and template.')}};
+$('#resetBtn').onclick=async()=>{const r=load('pcc_reset',null),email=$('#fEmail').value.trim().toLowerCase();
+ if(!r||r.email!==email||Date.now()>r.exp)return amsg('Code expired. Request a new one.');
+ if(r.tries>=5){localStorage.removeItem('pcc_reset');return amsg('Too many wrong tries. Request a new code.')}
+ if(r.code!==await sha($('#fCode').value.trim()+email)){r.tries++;save('pcc_reset',r);return amsg('Wrong code. '+(5-r.tries)+' tries left.')}
+ if($('#fNew').value.length<6)return amsg('New password needs 6+ characters.');
+ const u=users.find(x=>x.email===email);u.pass=await sha($('#fNew').value);save('pcc_users',users);localStorage.removeItem('pcc_reset');amsg('Password updated. You can log in now.',1);setTimeout(()=>$('#backLogin').click(),1300)};
 
 /* ---------- app shell ---------- */
-const NAV=[['map','🗺️','Map'],['bike','🚲','Bike'],['member','🎫','Member'],['chat','💬','Chat'],['photos','📷','Photos'],['profile','👤','Profile'],['settings','⚙️','Settings']];
+const NAV=[['home','🏠','Home'],['map','🗺️','Map'],['bike','🚲','Bike'],['member','🎫','Member'],['chat','💬','Chat'],['photos','📷','Photos'],['profile','👤','Profile'],['settings','⚙️','Settings']];
 function enter(){$('#auth').classList.add('hidden');$('#app').classList.remove('hidden');
  const items=[...NAV];if(me.role==='admin')items.push(['admin','🛡️','Admin']);
  $('#nav').innerHTML=items.map(i=>`<button data-v="${i[0]}"><span>${i[1]}</span>${i[2]}</button>`).join('');
  $$('#nav button').forEach(b=>b.onclick=()=>show(b.dataset.v));
  $('#hName').textContent=me.name.split(' ')[0];$('#hAv').outerHTML=avatar(me).replace('class="av"','class="av" id="hAv"').replace('<img class="av"','<img id="hAv" class="av"');
  if(pos){me.loc={lat:pos.coords.latitude,lng:pos.coords.longitude,t:Date.now()};persist()}
- initMap();show('map')}
+ initMap();show('home')}
 function persist(){const i=users.findIndex(u=>u.id===me.id);users[i]=me;save('pcc_users',users)}
 function show(v){$$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
- if(v==='map')setTimeout(()=>map.invalidateSize(),50);({bike:renderBikes,member:renderMember,chat:renderChat,photos:renderPhotos,profile:fillProfile,settings:fillSettings,admin:renderAdmin})[v]?.()}
+ if(v==='map')setTimeout(()=>map.invalidateSize(),50);({home:renderHome,bike:renderBikes,member:renderMember,chat:renderChat,photos:renderPhotos,profile:fillProfile,settings:fillSettings,admin:renderAdmin})[v]?.()}
 
 /* ---------- map + routes + live GPS ---------- */
 let map,meMarker,acc,trail,watch=null,trailPts=[],dist=0,others=L.layerGroup(),ctrls=[],routeLayers={};
@@ -145,3 +152,9 @@ function renderAdmin(){const us=load('pcc_users',[]);$('#aStats').innerHTML=`<di
  $('#aBody').innerHTML=us.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${u.role}</td><td><span class="badge ${u.member}">${u.member==='none'?'–':u.plan+' · '+u.member}</span></td><td>${u.loc?`<a href="https://www.google.com/maps?q=${u.loc.lat},${u.loc.lng}" target="_blank" rel="noopener">${u.loc.lat.toFixed(4)}, ${u.loc.lng.toFixed(4)}</a>`:'–'}</td><td>${u.member==='pending'?`<button class="btn sm" data-a="${u.id}">Approve</button> `:''}${u.role==='admin'?'':`<button class="btn sm red" data-r="${u.id}">Remove</button>`}</td></tr>`).join('');
  $$('#aBody [data-a]').forEach(b=>b.onclick=()=>{const l=load('pcc_users',[]),u=l.find(x=>x.id===b.dataset.a);u.member='active';save('pcc_users',l);users=l;renderAdmin();toast('Approved')});
  $$('#aBody [data-r]').forEach(b=>b.onclick=()=>{if(!confirm('Remove this user?'))return;users=load('pcc_users',[]).filter(x=>x.id!==b.dataset.r);save('pcc_users',users);renderAdmin()})}
+
+/* ---------- home ---------- */
+function renderHome(){$('#hw').textContent='Welcome, '+me.name.split(' ')[0]+'!';
+ $('#rcards').innerHTML=ROUTES.map((r,i)=>`<div class="rcd" data-i="${i}" style="animation-delay:${i*.08}s"><div class="im" style="background-image:url(images/route-${i+1}.jpg),url(images/route-${i+1}.svg)"></div><div class="tx"><b style="color:${r.color}">${r.name}</b><span>${r.km?r.km+' km · about '+Math.round(r.km/15*60)+' min by bike':'Tap to view on the live map'}</span></div></div>`).join('');
+ $$('#rcards .rcd').forEach(c=>c.onclick=()=>{show('map');setTimeout(()=>$(`#chips .chip[data-i="${c.dataset.i}"]`)?.click(),350)});
+ $$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go))}

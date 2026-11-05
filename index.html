@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PASSI CITY COMMUNITY CYCLING</title>
+<link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
 <link rel="stylesheet" href="style.css">
@@ -15,9 +16,12 @@
 <div id="splash"><div class="sp"><div class="lg"></div><h2>PASSI CITY COMMUNITY CYCLING</h2><div class="road"><i>🚴</i></div></div></div>
 
 <!-- STEP 1: LOCATION GATE + AUTH -->
-<section id="auth" class="center hidden">
- <div class="box card">
-  <div class="brand"><div class="lg"></div><h1>PASSI CITY COMMUNITY CYCLING</h1><p>Ride together. Ride safe.</p></div>
+<section id="auth" class="hidden">
+<div class="split">
+ <aside class="hero"><div class="hero-in"><div class="lg"></div><h1>PASSI CITY<br>COMMUNITY CYCLING</h1><p>The official community cycling program of the City of Passi, Iloilo. Ride together. Ride safe.</p>
+  <ul class="hl"><li>Live GPS that follows real roads</li><li>Agcararao, San Enrique, Compi and Man-it Bypass routes</li><li>Community chat, membership and ride photos</li></ul></div></aside>
+ <div class="pane"><div class="box card">
+  <h2 class="wl">Welcome</h2><p style="color:var(--mute);margin-bottom:6px">Log in or create your cyclist account.</p>
   <div class="locstat"><span class="dot" id="dot"></span><span id="locTxt">Turn on your location to sign up or log in.</span></div>
   <button class="btn" style="width:100%" id="locBtn">Turn on location</button>
   <div id="forms" class="hidden" style="margin-top:16px">
@@ -31,6 +35,7 @@
     <p style="text-align:center;margin-top:10px"><button type="button" class="link" id="backLogin">Back to log in</button></p></form>
   </div>
  </div>
+</div></div></div>
 </section>
 
 <!-- APP -->
@@ -40,7 +45,12 @@
   <nav class="nav" id="nav"></nav>
   <main>
    <!-- MAP -->
-   <div class="view on" id="v-map">
+   <div class="view on" id="v-home">
+    <div class="banner"><h2 id="hw">Welcome</h2><p>Explore Passi City on two wheels. Choose a route and start your ride today.</p><div class="bt"><button class="btn" data-go="map">Open live map</button><button class="btn ghost" data-go="member">Join membership</button></div></div>
+    <h3 class="sec">Featured routes</h3><div class="grid rc" id="rcards"></div>
+    <h3 class="sec">Ride safe</h3><div class="grid tips"><div class="t"><i>🪖</i><br><b>Wear a helmet</b><br><small>Always protect your head.</small></div><div class="t"><i>🚦</i><br><b>Follow traffic rules</b><br><small>Ride with the flow, signal your turns.</small></div><div class="t"><i>💧</i><br><b>Bring water</b><br><small>Stay hydrated on long routes.</small></div><div class="t"><i>📍</i><br><b>Share your location</b><br><small>Let the community know where you ride.</small></div></div>
+   </div>
+   <div class="view" id="v-map">
     <h2>Live route map</h2>
     <div class="chips" id="chips"></div>
     <div class="stats"><div><b id="sDist">0.00</b><span>km ridden</span></div><div><b id="sSpd">0</b><span>km/h</span></div><div><b id="sRoute">–</b><span>route length</span></div></div>
@@ -78,7 +88,7 @@
  </div>
 </div>
 
-<footer><span class="fb">🚴</span>© 2026 Passi City Community Cycling<br>Developed by <b>RONEL SIGAYA FLORES</b><br>BSIT Student, PHINMA University of Iloilo</footer>
+<footer><span class="fb">🚴</span><small>City Government of Passi, Iloilo</small><br>© 2026 Passi City Community Cycling<br>Developed by <b>RONEL SIGAYA FLORES</b><br>BSIT Student, PHINMA University of Iloilo</footer>
 <div id="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

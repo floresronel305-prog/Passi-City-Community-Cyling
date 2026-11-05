@@ -1,12 +1,6 @@
 /* PASSI CITY COMMUNITY CYCLING - enhancement.js
    Extra features loaded after app.js (shares its globals: me, map, toast, $, $$ ...) */
 (() => {
-  /* Load the logo/map improvements after the main application has defined its globals. */
-  const upgrade = document.createElement('script');
-  upgrade.src = 'map-upgrade.js';
-  upgrade.defer = true;
-  document.head.appendChild(upgrade);
-
   /* 1. Show/hide password + strength meter */
   $$('input[type=password]').forEach(inp => {
     const w = document.createElement('div'); w.className = 'pw';
@@ -61,7 +55,7 @@
   $('#v-map').appendChild(card);
   function drawHist() {
     const l = hist().filter(r => r.owner === me?.id).slice(0, 8);
-    card.innerHTML = '<h3>My ride history</h3>' + (l.length ? l.map(r => `<div class="rh"><span>${new Date(r.t).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span><b>${r.km} km</b></div>`).join('') : '<p style="color:var(--mute);margin-top:8px">No rides recorded yet.</p>');
+    card.innerHTML = '<h3>My ride history</h3>' + (l.length ? l.map(r => `<div class="rh"><span>${new Date(r.t).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span><b>${r.km} km</b></div>`).join('') : '<p style="color:var(--mute);margin-top:8px">No rides yet. Start live GPS to record one.</p>');
   }
   $('#rideBtn').addEventListener('click', () => {
     if (watch === null) { // ride was just stopped
