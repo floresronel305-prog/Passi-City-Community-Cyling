@@ -1,0 +1,18 @@
+{
+  "users": [
+    {
+      "id": "admin",
+      "name": "Admin",
+      "email": "admin@passicycling.com",
+      "role": "admin",
+      "member": "active",
+      "plan": "Club",
+      "phone": "",
+      "addr": "",
+      "bio": "Community cycling admin",
+      "avatar": "",
+      "share": true
+    }
+  ],
+  "messages": []
+}
